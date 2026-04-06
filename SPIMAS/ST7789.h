@@ -8,7 +8,7 @@
 #include "driver/gpio.h"
 
 
- uint16_t const xsize = 240, ysize = 320, xoff = 0, yoff = 0, invert = 1, rotate = 0, bgr = 0;
+ uint16_t const xsize = 240, ysize = 240, xoff = 0, yoff = 0, invert = 1, rotate = 0, bgr = 0;
 
 #include "vga866.h"
 
@@ -186,13 +186,12 @@ void scroll() {
     yp+=FONT_HEIGHT*sy;
   } else {
     if (VSP+FONT_HEIGHT*sy<TFA+VSA) {
- 
-    scrollFrame(VSP+FONT_HEIGHT*sy);
+      scrollFrame(VSP+FONT_HEIGHT*sy);
     } else {
       scrollFrame(TFA);
     }
-    fillRect(xp, calcY(yp), xsize-xp, FONT_HEIGHT*sy, bg);
   }
+  fillRect(xp, calcY(yp), xsize-xp, FONT_HEIGHT*sy, bg);
 }
 
 void setupScroll() {
@@ -337,7 +336,7 @@ void begin() {
     
     spi_device_interface_config_t devcfg={
         .mode=0,                                //SPI mode 0
-        .clock_speed_hz=26*1000*1000,           //Clock out at 26 MHz
+        .clock_speed_hz=SPI_MASTER_FREQ_20M, //26*1000*1000,           //Clock out at 26 MHz
 //        .clock_speed_hz=10*1000*1000,           //Clock out at 10 MHz
         .spics_io_num=PIN_NUM_CS,               //CS pin
         .queue_size=7,                          //We want to be able to queue 7 transactions at a time
@@ -382,7 +381,7 @@ void drawChar(uint16_t x, uint16_t y, unsigned char c, uint16_t cf = 0xffff, uin
 void drawStr(uint16_t x, uint16_t y, const char *str, uint16_t cf = WHITE, uint16_t cb = BLACK) {
   while (*str && (x < xsize)) {
     drawChar(x, y, *str++, cf, cb);
-    x += FONT_WIDTH + FONT_GAP;
+    x += FONT_WIDTH*sx + FONT_GAP;
   }
 }
 
